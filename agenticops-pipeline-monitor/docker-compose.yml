@@ -1,0 +1,40 @@
+services:
+  agent-app:
+    build: .
+    ports:
+      - "8501:8501"
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  etl-job:
+    build: ./etl_simulator
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: always
+    environment:
+      POSTGRES_USER: agenticops
+      POSTGRES_PASSWORD: agenticops_pw
+      POSTGRES_DB: agenticops
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agenticops -d pipeline_monitor"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:

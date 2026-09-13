@@ -22,3 +22,11 @@ if st.button("Show all logs"):
     session.close()
     for log in logs:
         st.write(f"{log.id} | {log.job_name} | {log.status} |  {log.timestamp}")
+
+from agents import log_analyzer_node, doc_retriever_node
+
+if st.button("Test Log Analyzer + Retriever"):
+    state = {}
+    state = log_analyzer_node(state)
+    state = doc_retriever_node(state)
+    st.json(state)

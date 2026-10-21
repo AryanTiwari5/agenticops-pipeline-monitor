@@ -24,3 +24,6 @@ class PipelineState(TypedDict):
 
     # Supervisor control
     next_step: Optional[str]
+
+    # LLM-generated summary
+    incident_summary: Optional[str]
